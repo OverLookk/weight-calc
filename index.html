@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lift Weight Calculator</title>
+    <link rel="icon" href="icon.png" type="image/png">
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
     <style>
         /* General Styling */
         * {
@@ -27,7 +29,7 @@
             width: 100%;
             max-width: 400px;
             text-align: center;
-            padding: 0 20px; /* Added padding on the sides */
+            padding: 0 20px;
         }
         h1 {
             font-size: 24px;
@@ -72,23 +74,23 @@
             font-size: 18px;
             font-weight: bold;
             color: #ffffff;
-            background-color: #007bff;
+            background-color: #6c757d;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s;
         }
         button:hover {
-            background-color: #0056b3;
+            background-color: #5a6268;
         }
         h2 {
             font-size: 20px;
             margin-top: 20px;
         }
-        #weight-output {
+        #weight-output, #total-weight, #plate-distribution {
             font-weight: bold;
         }
-        
+
         /* Toggle Switch */
         .toggle-container {
             display: flex;
@@ -99,7 +101,7 @@
         }
         .icon {
             font-size: 18px;
-            color: #888888; /* Set icons to grey */
+            color: #888888;
         }
         .switch {
             position: relative;
@@ -216,6 +218,8 @@
     <button onclick="calculateWeight()">Calculate</button>
 
     <h2>Weight Per Side: <span id="weight-output">-</span> lbs</h2>
+    <h2>Total Weight: <span id="total-weight">-</span> lbs</h2>
+    <h2>Load Plates: <span id="plate-distribution">-</span></h2>
 </div>
 
 <script>
@@ -232,19 +236,40 @@
         const roundingType = document.getElementById('rounding-type').value;
 
         // Calculate target weight and divide by 2
-        let weight = ((prWeight * percentage) - barWeight) / 2;
+        let totalWeight = prWeight * percentage;
+        let perSide = (totalWeight - barWeight) / 2;
 
         // Rounding logic
         if (roundingType === 'up') {
-            weight = Math.ceil(weight / roundingInterval) * roundingInterval;
+            perSide = Math.ceil(perSide / roundingInterval) * roundingInterval;
         } else if (roundingType === 'down') {
-            weight = Math.floor(weight / roundingInterval) * roundingInterval;
+            perSide = Math.floor(perSide / roundingInterval) * roundingInterval;
         } else {
-            weight = Math.round(weight / roundingInterval) * roundingInterval;
+            perSide = Math.round(perSide / roundingInterval) * roundingInterval;
         }
 
-        // Display the calculated weight
-        document.getElementById('weight-output').innerText = weight.toFixed(1);
+        // Plate loading
+        const plates = [2.5, 5, 10, 15, 25, 35, 45];
+        let remainingWeight = perSide;
+        const loadOrder = [];
+
+        for (let i = plates.length - 1; i >= 0; i--) {
+            const plate = plates[i];
+            while (remainingWeight >= plate) {
+                loadOrder.push(plate);
+                remainingWeight -= plate;
+            }
+        }
+
+        loadOrder.reverse(); // Sort from smallest to largest
+
+        // Calculate the actual loaded weight
+        const actualLoadedWeight = loadOrder.reduce((sum, plate) => sum + plate * 2, barWeight);
+
+        // Display the results
+        document.getElementById('weight-output').innerText = perSide.toFixed(1);
+        document.getElementById('total-weight').innerText = actualLoadedWeight.toFixed(1);
+        document.getElementById('plate-distribution').innerText = loadOrder.join('-') || 'None';
     }
 </script>
 
