@@ -15,6 +15,7 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      /* We do NOT change the font, as per your request */
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
         Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
     }
@@ -36,14 +37,12 @@
     }
 
     /* 
-      LIGHT THEME:
-      We'll keep a bright pastel gradient 
+      LIGHT THEME
     */
     [data-theme="light"] {
       background: linear-gradient(135deg, #ddb6e4 0%, #88afc0 100%);
-      color: #222; /* darker text on light background */
+      color: #222;
     }
-    /* Subtle radial highlights (day mode) */
     [data-theme="light"]::before {
       content: "";
       position: absolute;
@@ -63,14 +62,12 @@
     }
 
     /* 
-      DARK THEME:
-      We'll keep the dark gradient from your original code 
+      DARK THEME
     */
     [data-theme="dark"] {
       background: linear-gradient(135deg, #101010 0%, #1e1e1e 100%);
-      color: #f0f0f0; /* lighter text on dark background */
+      color: #f0f0f0;
     }
-    /* Subtle radial highlights (night mode) */
     [data-theme="dark"]::before {
       content: "";
       position: absolute;
@@ -105,23 +102,20 @@
       backdrop-filter: saturate(180%) blur(20px);
       -webkit-backdrop-filter: saturate(180%) blur(20px);
       transition: background 0.4s ease, border 0.4s ease, box-shadow 0.4s ease;
+      margin: 2rem; /* some outer margin for medium+ screens */
     }
 
-    /* Dark mode glass styles */
     [data-theme="dark"] .calculator {
       background: rgba(255, 255, 255, 0.07);
       border: 1px solid rgba(255, 255, 255, 0.18);
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     }
-
-    /* Light mode glass styles */
     [data-theme="light"] .calculator {
       background: rgba(255, 255, 255, 0.25);
       border: 1px solid rgba(255, 255, 255, 0.4);
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
     }
 
-    /* Headings inside the .calculator */
     .calculator h1 {
       font-size: 24px;
       margin-bottom: 20px;
@@ -157,12 +151,12 @@
       padding: 10px;
       margin: 5px 0;
       border-radius: 8px;
-      font-size: 16px;
+      font-size: 16px; /* We do NOT change the font size */
       outline: none;
       transition: background 0.3s, border 0.3s, color 0.3s;
       background: rgba(255, 255, 255, 0.1);
       border: 1px solid rgba(255, 255, 255, 0.15);
-      color: inherit; /* adapt to light/dark text color */
+      color: inherit;
     }
     .form-group input:focus,
     .form-group select:focus {
@@ -171,13 +165,18 @@
     }
 
     /* For small screens */
-    @media (max-width: 500px) {
-      .form-group {
-        flex-direction: column;
-        align-items: flex-start;
+    @media (max-width: 600px) {
+      .calculator {
+        width: 90%;
+        margin: 1rem auto; /* reduce margin so it fits better on small screens */
+        padding: 1rem;
       }
-      .form-group label {
-        margin-bottom: 0;
+    }
+    @media (max-width: 400px) {
+      .calculator {
+        width: 90%;
+        margin: 0.5rem auto;
+        padding: 0.75rem;
       }
     }
 
@@ -194,7 +193,7 @@
       backdrop-filter: saturate(180%) blur(10px);
       -webkit-backdrop-filter: saturate(180%) blur(10px);
       margin-top: 10px;
-      color: inherit; /* adapt to parent color */
+      color: inherit;
       transition: background-color 0.3s, border 0.3s, transform 0.3s;
     }
     button:hover {
@@ -208,9 +207,7 @@
 
     /*
     ==============================================================================
-      New Theme Toggle (sun & moon, symmetrical sun rays)
-      from https://web.dev/patterns/theming/theme-switch
-      integrated with symmetrical rays
+      Theme Toggle (sun & moon, symmetrical rays)
     ==============================================================================
     */
     #theme-toggle {
@@ -224,14 +221,12 @@
       width: 40px;
       height: 40px;
       outline: none;
-      z-index: 10; /* Above radial backgrounds, below .calculator if overlapping */
+      z-index: 10;
     }
-
     .sun-and-moon > :is(.moon, .sun, .sun-beams) {
       transform-origin: center;
     }
 
-    /* Default icon fill, can customize as needed */
     :root {
       --icon-fill: #444;
       --icon-fill-hover: #000;
@@ -244,17 +239,14 @@
     .sun-and-moon > :is(.moon, .sun) {
       fill: var(--icon-fill);
     }
-
     #theme-toggle:is(:hover, :focus-visible) > .sun-and-moon > :is(.moon, .sun) {
       fill: var(--icon-fill-hover);
     }
-
     .sun-and-moon > .sun-beams {
       stroke: var(--icon-fill);
       stroke-width: 2px;
       transition: stroke 0.2s ease-in-out;
     }
-
     #theme-toggle:is(:hover, :focus-visible) .sun-and-moon > .sun-beams {
       stroke: var(--icon-fill-hover);
     }
@@ -277,7 +269,6 @@
       }
     }
 
-    /* Animations if user doesn't prefer reduced motion */
     @media (prefers-reduced-motion: no-preference) {
       .sun-and-moon > .sun {
         transition: transform .5s var(--ease-elastic-3);
@@ -308,11 +299,12 @@
         transition-delay: .25s;
       }
     }
+
   </style>
 </head>
 
-<!-- Start in dark mode by default: [data-theme="dark"] on <html> -->
-<!-- If you want day mode initially, change it to data-theme="light" above -->
+<!-- Start in dark mode (data-theme="dark"), or swap to data-theme="light" by default if you want -->
+<html data-theme="dark">
 <body>
   <!-- The theme toggle button in top-right corner -->
   <button class="theme-toggle" id="theme-toggle" title="Toggles light & dark" aria-label="auto" aria-live="polite">
@@ -332,7 +324,7 @@
         mask="url(#moon-mask)" 
         fill="currentColor" 
       />
-      <!-- REPLACED SUN BEAMS with symmetrical lines -->
+      <!-- Symmetrical sun beams -->
       <g class="sun-beams" stroke="currentColor">
         <!-- Top -->
         <line x1="12" y1="2" x2="12" y2="4" />
@@ -437,24 +429,18 @@
     };
 
     const reflectPreference = () => {
-      // set data-theme on <html>
       document.documentElement.setAttribute('data-theme', theme.value);
-
       // update aria-label if desired
       document.querySelector('#theme-toggle')?.setAttribute('aria-label', theme.value);
     };
 
     const theme = { value: getColorPreference() };
-
-    // set early so no page flashes / CSS is made aware
     reflectPreference();
 
-    // on window load, attach event listener
     window.onload = () => {
       document.querySelector('#theme-toggle').addEventListener('click', onClick);
     };
 
-    // sync with system changes
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ({matches:isDark}) => {
       theme.value = isDark ? 'dark' : 'light';
       setPreference();
@@ -462,7 +448,6 @@
 
     /* 
       LIFT WEIGHT CALCULATOR LOGIC
-      from your original code 
     */
     function calculateWeight() {
       const prWeight = parseFloat(document.getElementById("pr-weight").value);
@@ -481,7 +466,6 @@
       } else if (roundingType === "down") {
         perSide = Math.floor(perSide / roundingInterval) * roundingInterval;
       } else {
-        // 'closest'
         perSide = Math.round(perSide / roundingInterval) * roundingInterval;
       }
 
@@ -507,10 +491,11 @@
         barWeight
       );
 
-      // Display the results
+      // Display results
       document.getElementById("weight-output").innerText = perSide.toFixed(1);
       document.getElementById("total-weight").innerText = actualLoadedWeight.toFixed(1);
-      document.getElementById("plate-distribution").innerText = loadOrder.join("-") || "None";
+      document.getElementById("plate-distribution").innerText =
+        loadOrder.join("-") || "None";
     }
   </script>
 </body>
