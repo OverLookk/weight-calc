@@ -1,277 +1,517 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lift Weight Calculator</title>
-    <link rel="icon" href="icon.png" type="image/png">
-    <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Lift Weight Calculator</title>
+  <link rel="icon" href="icon.png" type="image/png" />
 
-    <style>
-        /* General Styling */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            transition: background 0.3s, color 0.3s;
-            background-color: #121212;
-            color: #f0f0f0;
-        }
-        .calculator {
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-            padding: 0 20px;
-        }
-        h1 {
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-        
-        /* Responsive form layout */
-        .form-group {
-            display: flex;
-            align-items: center;
-            margin: 10px 0;
-            flex-wrap: wrap;
-        }
-        .form-group label {
-            flex: 1;
-            font-weight: bold;
-            margin-bottom: 5px;
-            min-width: 120px;
-        }
-        .form-group input,
-        .form-group select {
-            flex: 2;
-            width: 100%;
-            padding: 10px;
-            margin: 5px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-        }
+  <!-- Optional: Import open-props for fancy easing variables -->
+  <style>@import "https://unpkg.com/open-props/easings.min.css";</style>
 
-        /* Adjust layout for smaller screens */
-        @media (max-width: 500px) {
-            .form-group {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-        }
+  <style>
+    /* General Reset */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    }
 
-        button {
-            width: 100%;
-            padding: 12px;
-            font-size: 18px;
-            font-weight: bold;
-            color: #ffffff;
-            background-color: #6c757d;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #5a6268;
-        }
-        h2 {
-            font-size: 20px;
-            margin-top: 20px;
-        }
-        #weight-output, #total-weight, #plate-distribution {
-            font-weight: bold;
-        }
+    /*
+    ==============================================================================
+      Light vs. Dark (using data-theme="light" or "dark" on <html>)
+    ==============================================================================
+    */
+    html {
+      /* fill entire window with flex container */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden; /* hide any radial gradient overflows */
+      transition: background 0.4s ease;
+      position: relative;
+    }
 
-        /* Toggle Switch */
-        .toggle-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 15px;
-            gap: 10px;
-        }
-        .icon {
-            font-size: 18px;
-            color: #888888;
-        }
-        .switch {
-            position: relative;
-            width: 50px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-        }
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            border-radius: 24px;
-            transition: 0.4s;
-        }
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            border-radius: 50%;
-            transition: 0.4s;
-        }
-        input:checked + .slider {
-            background-color: #007bff;
-        }
-        input:checked + .slider:before {
-            transform: translateX(26px);
-        }
+    /* 
+      LIGHT THEME:
+      We'll keep a bright pastel gradient 
+    */
+    [data-theme="light"] {
+      background: linear-gradient(135deg, #ddb6e4 0%, #88afc0 100%);
+      color: #222; /* darker text on light background */
+    }
+    /* Subtle radial highlights (day mode) */
+    [data-theme="light"]::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background: radial-gradient(
+          circle at 25% 30%,
+          rgba(255, 182, 193, 0.15),
+          transparent 50%
+        ),
+        radial-gradient(
+          circle at 80% 70%,
+          rgba(66, 235, 193, 0.15),
+          transparent 50%
+        );
+    }
 
-        /* Dark Mode Styles */
-        body.dark-mode {
-            background-color: #121212;
-            color: #f0f0f0;
-        }
-        .dark-mode input,
-        .dark-mode select,
-        .dark-mode button {
-            background-color: #333333;
-            color: #f0f0f0;
-        }
+    /* 
+      DARK THEME:
+      We'll keep the dark gradient from your original code 
+    */
+    [data-theme="dark"] {
+      background: linear-gradient(135deg, #101010 0%, #1e1e1e 100%);
+      color: #f0f0f0; /* lighter text on dark background */
+    }
+    /* Subtle radial highlights (night mode) */
+    [data-theme="dark"]::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background: radial-gradient(
+          circle at 25% 30%,
+          rgba(243, 69, 179, 0.15),
+          transparent 50%
+        ),
+        radial-gradient(
+          circle at 80% 70%,
+          rgba(66, 235, 193, 0.15),
+          transparent 50%
+        );
+    }
 
-        /* Light Mode Styles */
-        body.light-mode {
-            background-color: #f0f2f5;
-            color: #333333;
+    /*
+    ==============================================================================
+      Glassmorphism Calculator Container
+    ==============================================================================
+    */
+    .calculator {
+      position: relative;
+      z-index: 1; /* Above radial background flares */
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+      padding: 20px;
+      border-radius: 16px;
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      transition: background 0.4s ease, border 0.4s ease, box-shadow 0.4s ease;
+    }
+
+    /* Dark mode glass styles */
+    [data-theme="dark"] .calculator {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Light mode glass styles */
+    [data-theme="light"] .calculator {
+      background: rgba(255, 255, 255, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Headings inside the .calculator */
+    .calculator h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .calculator h2 {
+      font-size: 20px;
+      margin-top: 20px;
+      font-weight: 500;
+    }
+    #weight-output,
+    #total-weight,
+    #plate-distribution {
+      font-weight: 700;
+    }
+
+    /* Form group layout */
+    .form-group {
+      display: flex;
+      align-items: center;
+      margin: 10px 0;
+      flex-wrap: wrap;
+    }
+    .form-group label {
+      flex: 1;
+      font-weight: 500;
+      margin-bottom: 5px;
+      min-width: 120px;
+    }
+    .form-group input,
+    .form-group select {
+      flex: 2;
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 8px;
+      font-size: 16px;
+      outline: none;
+      transition: background 0.3s, border 0.3s, color 0.3s;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: inherit; /* adapt to light/dark text color */
+    }
+    .form-group input:focus,
+    .form-group select:focus {
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    /* For small screens */
+    @media (max-width: 500px) {
+      .form-group {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .form-group label {
+        margin-bottom: 0;
+      }
+    }
+
+    /* Buttons */
+    button {
+      width: 100%;
+      padding: 14px;
+      font-size: 18px;
+      font-weight: 600;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      cursor: pointer;
+      backdrop-filter: saturate(180%) blur(10px);
+      -webkit-backdrop-filter: saturate(180%) blur(10px);
+      margin-top: 10px;
+      color: inherit; /* adapt to parent color */
+      transition: background-color 0.3s, border 0.3s, transform 0.3s;
+    }
+    button:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      transform: translateY(-1px);
+    }
+    button:active {
+      transform: translateY(1px);
+    }
+
+    /*
+    ==============================================================================
+      New Theme Toggle (sun & moon, symmetrical sun rays)
+      from https://web.dev/patterns/theming/theme-switch
+      integrated with symmetrical rays
+    ==============================================================================
+    */
+    #theme-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      width: 40px;
+      height: 40px;
+      outline: none;
+      z-index: 10; /* Above radial backgrounds, below .calculator if overlapping */
+    }
+
+    .sun-and-moon > :is(.moon, .sun, .sun-beams) {
+      transform-origin: center;
+    }
+
+    /* Default icon fill, can customize as needed */
+    :root {
+      --icon-fill: #444;
+      --icon-fill-hover: #000;
+    }
+    [data-theme="dark"] {
+      --icon-fill: #ccc;
+      --icon-fill-hover: #fff;
+    }
+
+    .sun-and-moon > :is(.moon, .sun) {
+      fill: var(--icon-fill);
+    }
+
+    #theme-toggle:is(:hover, :focus-visible) > .sun-and-moon > :is(.moon, .sun) {
+      fill: var(--icon-fill-hover);
+    }
+
+    .sun-and-moon > .sun-beams {
+      stroke: var(--icon-fill);
+      stroke-width: 2px;
+      transition: stroke 0.2s ease-in-out;
+    }
+
+    #theme-toggle:is(:hover, :focus-visible) .sun-and-moon > .sun-beams {
+      stroke: var(--icon-fill-hover);
+    }
+
+    /* Scale up the sun & hide beams in dark mode */
+    [data-theme="dark"] .sun-and-moon > .sun {
+      transform: scale(1.75);
+      transition: transform .25s var(--ease-out-3);
+    }
+    [data-theme="dark"] .sun-and-moon > .sun-beams {
+      opacity: 0;
+    }
+    [data-theme="dark"] .sun-and-moon > .moon > circle {
+      transform: translateX(-7px);
+    }
+    @supports (cx: 1) {
+      [data-theme="dark"] .sun-and-moon > .moon > circle {
+        cx: 17;
+        transform: translateX(0);
+      }
+    }
+
+    /* Animations if user doesn't prefer reduced motion */
+    @media (prefers-reduced-motion: no-preference) {
+      .sun-and-moon > .sun {
+        transition: transform .5s var(--ease-elastic-3);
+      }
+      .sun-and-moon > .sun-beams {
+        transition:
+          transform .5s var(--ease-elastic-4),
+          opacity .5s var(--ease-3);
+      }
+      .sun-and-moon .moon > circle {
+        transition: transform .25s var(--ease-out-5);
+      }
+      @supports (cx: 1) {
+        .sun-and-moon .moon > circle {
+          transition: cx .25s var(--ease-out-5);
         }
-        .light-mode input,
-        .light-mode select,
-        .light-mode button {
-            background-color: #ffffff;
-            color: #333333;
-        }
-    </style>
+      }
+      [data-theme="dark"] .sun-and-moon > .sun {
+        transition-timing-function: var(--ease-3);
+        transition-duration: .25s;
+      }
+      [data-theme="dark"] .sun-and-moon > .sun-beams {
+        transition-duration: .15s;
+        transform: rotateZ(-25deg);
+      }
+      [data-theme="dark"] .sun-and-moon > .moon > circle {
+        transition-duration: .5s;
+        transition-delay: .25s;
+      }
+    }
+  </style>
 </head>
-<body class="dark-mode">
 
-<div class="calculator">
-    <div class="toggle-container">
-        <i class="fas fa-moon icon"></i>
-        <label class="switch">
-            <input type="checkbox" id="mode-toggle" onchange="toggleMode()">
-            <span class="slider"></span>
-        </label>
-        <i class="fas fa-sun icon"></i>
-    </div>
+<!-- Start in dark mode by default: [data-theme="dark"] on <html> -->
+<!-- If you want day mode initially, change it to data-theme="light" above -->
+<body>
+  <!-- The theme toggle button in top-right corner -->
+  <button class="theme-toggle" id="theme-toggle" title="Toggles light & dark" aria-label="auto" aria-live="polite">
+    <svg class="sun-and-moon" aria-hidden="true" width="24" height="24" viewBox="0 0 24 24">
+      <!-- Mask for the moon shape -->
+      <mask class="moon" id="moon-mask">
+        <rect x="0" y="0" width="100%" height="100%" fill="white" />
+        <!-- The circle for the 'moon' shape that moves left/right in dark mode -->
+        <circle cx="24" cy="10" r="6" fill="black" />
+      </mask>
+      <!-- The sun circle (masked by moon) -->
+      <circle 
+        class="sun" 
+        cx="12" 
+        cy="12" 
+        r="6" 
+        mask="url(#moon-mask)" 
+        fill="currentColor" 
+      />
+      <!-- REPLACED SUN BEAMS with symmetrical lines -->
+      <g class="sun-beams" stroke="currentColor">
+        <!-- Top -->
+        <line x1="12" y1="2" x2="12" y2="4" />
+        <!-- Bottom -->
+        <line x1="12" y1="22" x2="12" y2="20" />
+        <!-- Left -->
+        <line x1="2" y1="12" x2="4" y2="12" />
+        <!-- Right -->
+        <line x1="22" y1="12" x2="20" y2="12" />
+        <!-- Top-left diagonal -->
+        <line x1="5" y1="5" x2="6.5" y2="6.5" />
+        <!-- Bottom-right diagonal -->
+        <line x1="19" y1="19" x2="17.5" y2="17.5" />
+        <!-- Bottom-left diagonal -->
+        <line x1="5" y1="19" x2="6.5" y2="17.5" />
+        <!-- Top-right diagonal -->
+        <line x1="19" y1="5" x2="17.5" y2="6.5" />
+      </g>
+    </svg>
+  </button>
 
+  <!-- Glass Panel for the Lift Weight Calculator -->
+  <div class="calculator">
     <h1>Lift Weight Calculator</h1>
     
+    <!-- Form Inputs -->
     <div class="form-group">
-        <label for="pr-weight">PR Weight (lbs):</label>
-        <input type="number" id="pr-weight" placeholder="Enter your PR weight" required>
+      <label for="pr-weight">PR Weight (lbs):</label>
+      <input type="number" id="pr-weight" placeholder="Enter your PR weight" required />
     </div>
 
     <div class="form-group">
-        <label for="percentage">Target Percentage (%):</label>
-        <input type="number" id="percentage" value="100" placeholder="Enter target percentage" required>
+      <label for="percentage">Target Percentage (%):</label>
+      <input type="number" id="percentage" value="100" placeholder="Enter target percentage" required />
     </div>
 
     <div class="form-group">
-        <label for="bar-weight">Bar Weight (lbs):</label>
-        <input type="number" id="bar-weight" value="45" required>
+      <label for="bar-weight">Bar Weight (lbs):</label>
+      <input type="number" id="bar-weight" value="45" required />
     </div>
 
     <div class="form-group">
-        <label for="rounding-interval">Rounding Interval:</label>
-        <select id="rounding-interval">
-            <option value="2.5" selected>2.5</option>
-            <option value="5">5</option>
-        </select>
+      <label for="rounding-interval">Rounding Interval:</label>
+      <select id="rounding-interval">
+        <option value="2.5" selected>2.5</option>
+        <option value="5">5</option>
+      </select>
     </div>
 
     <div class="form-group">
-        <label for="rounding-type">Rounding Type:</label>
-        <select id="rounding-type">
-            <option value="closest" selected>Closest</option>
-            <option value="up">Up</option>
-            <option value="down">Down</option>
-        </select>
+      <label for="rounding-type">Rounding Type:</label>
+      <select id="rounding-type">
+        <option value="closest" selected>Closest</option>
+        <option value="up">Up</option>
+        <option value="down">Down</option>
+      </select>
     </div>
 
     <button onclick="calculateWeight()">Calculate</button>
 
-    <h2>Weight Per Side: <span id="weight-output">-</span> lbs</h2>
-    <h2>Total Weight: <span id="total-weight">-</span> lbs</h2>
-    <h2>Load Plates: <span id="plate-distribution">-</span></h2>
-</div>
+    <!-- Results -->
+    <h2>
+      Weight Per Side: <span id="weight-output">-</span> lbs
+    </h2>
+    <h2>
+      Total Weight: <span id="total-weight">-</span> lbs
+    </h2>
+    <h2>
+      Load Plates: <span id="plate-distribution">-</span>
+    </h2>
+  </div>
 
-<script>
-    function toggleMode() {
-        document.body.classList.toggle('dark-mode');
-        document.body.classList.toggle('light-mode');
-    }
+  <script>
+    /* 
+      THEME PREFERENCE SCRIPT 
+      from https://web.dev/patterns/theming/theme-switch 
+      with localStorage for remembering user preference
+    */
+    const storageKey = 'theme-preference';
 
+    const onClick = () => {
+      // flip current value
+      theme.value = theme.value === 'light' ? 'dark' : 'light';
+      setPreference();
+    };
+
+    const getColorPreference = () => {
+      // if user has a stored preference, use that
+      if (localStorage.getItem(storageKey)) {
+        return localStorage.getItem(storageKey);
+      } else {
+        // otherwise, match the system setting
+        return window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'dark'
+          : 'light';
+      }
+    };
+
+    const setPreference = () => {
+      localStorage.setItem(storageKey, theme.value);
+      reflectPreference();
+    };
+
+    const reflectPreference = () => {
+      // set data-theme on <html>
+      document.documentElement.setAttribute('data-theme', theme.value);
+
+      // update aria-label if desired
+      document.querySelector('#theme-toggle')?.setAttribute('aria-label', theme.value);
+    };
+
+    const theme = { value: getColorPreference() };
+
+    // set early so no page flashes / CSS is made aware
+    reflectPreference();
+
+    // on window load, attach event listener
+    window.onload = () => {
+      document.querySelector('#theme-toggle').addEventListener('click', onClick);
+    };
+
+    // sync with system changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ({matches:isDark}) => {
+      theme.value = isDark ? 'dark' : 'light';
+      setPreference();
+    });
+
+    /* 
+      LIFT WEIGHT CALCULATOR LOGIC
+      from your original code 
+    */
     function calculateWeight() {
-        const prWeight = parseFloat(document.getElementById('pr-weight').value);
-        const percentage = parseFloat(document.getElementById('percentage').value) / 100;
-        const barWeight = parseFloat(document.getElementById('bar-weight').value);
-        const roundingInterval = parseFloat(document.getElementById('rounding-interval').value);
-        const roundingType = document.getElementById('rounding-type').value;
+      const prWeight = parseFloat(document.getElementById("pr-weight").value);
+      const percentage = parseFloat(document.getElementById("percentage").value) / 100;
+      const barWeight = parseFloat(document.getElementById("bar-weight").value);
+      const roundingInterval = parseFloat(document.getElementById("rounding-interval").value);
+      const roundingType = document.getElementById("rounding-type").value;
 
-        // Calculate target weight and divide by 2
-        let totalWeight = prWeight * percentage;
-        let perSide = (totalWeight - barWeight) / 2;
+      // Calculate target weight and divide by 2
+      let totalWeight = prWeight * percentage;
+      let perSide = (totalWeight - barWeight) / 2;
 
-        // Rounding logic
-        if (roundingType === 'up') {
-            perSide = Math.ceil(perSide / roundingInterval) * roundingInterval;
-        } else if (roundingType === 'down') {
-            perSide = Math.floor(perSide / roundingInterval) * roundingInterval;
-        } else {
-            perSide = Math.round(perSide / roundingInterval) * roundingInterval;
+      // Rounding logic
+      if (roundingType === "up") {
+        perSide = Math.ceil(perSide / roundingInterval) * roundingInterval;
+      } else if (roundingType === "down") {
+        perSide = Math.floor(perSide / roundingInterval) * roundingInterval;
+      } else {
+        // 'closest'
+        perSide = Math.round(perSide / roundingInterval) * roundingInterval;
+      }
+
+      // Plate loading
+      const plates = [2.5, 5, 10, 15, 25, 35, 45];
+      let remainingWeight = perSide;
+      const loadOrder = [];
+
+      for (let i = plates.length - 1; i >= 0; i--) {
+        const plate = plates[i];
+        while (remainingWeight >= plate) {
+          loadOrder.push(plate);
+          remainingWeight -= plate;
         }
+      }
 
-        // Plate loading
-        const plates = [2.5, 5, 10, 15, 25, 35, 45];
-        let remainingWeight = perSide;
-        const loadOrder = [];
+      // Sort from smallest to largest for display
+      loadOrder.reverse();
 
-        for (let i = plates.length - 1; i >= 0; i--) {
-            const plate = plates[i];
-            while (remainingWeight >= plate) {
-                loadOrder.push(plate);
-                remainingWeight -= plate;
-            }
-        }
+      // Calculate the actual loaded weight
+      const actualLoadedWeight = loadOrder.reduce(
+        (sum, plate) => sum + plate * 2,
+        barWeight
+      );
 
-        loadOrder.reverse(); // Sort from smallest to largest
-
-        // Calculate the actual loaded weight
-        const actualLoadedWeight = loadOrder.reduce((sum, plate) => sum + plate * 2, barWeight);
-
-        // Display the results
-        document.getElementById('weight-output').innerText = perSide.toFixed(1);
-        document.getElementById('total-weight').innerText = actualLoadedWeight.toFixed(1);
-        document.getElementById('plate-distribution').innerText = loadOrder.join('-') || 'None';
+      // Display the results
+      document.getElementById("weight-output").innerText = perSide.toFixed(1);
+      document.getElementById("total-weight").innerText = actualLoadedWeight.toFixed(1);
+      document.getElementById("plate-distribution").innerText = loadOrder.join("-") || "None";
     }
-</script>
-
+  </script>
 </body>
 </html>
